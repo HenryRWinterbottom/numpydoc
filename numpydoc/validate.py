@@ -33,6 +33,8 @@ ALLOWED_SECTIONS = [
     "Notes",
     "References",
     "Examples",
+    "Description",
+    "Keywords",
 ]
 # NOTE: The following comment is a sentinel for embedding in the docs - do not
 # modify/remove
@@ -285,12 +287,16 @@ class Validator:
         return self._doc_parameters(["Parameters"])
 
     @property
+    def doc_keywords(self):
+        return self._doc_parameters(["Keywords"])
+
+    @property
     def doc_other_parameters(self):
         return self._doc_parameters(["Other Parameters"])
 
     @property
     def doc_all_parameters(self):
-        return self._doc_parameters(["Parameters", "Other Parameters"])
+        return self._doc_parameters(["Parameters", "Keywords", "Other Parameters"])
 
     @property
     def signature_parameters(self):
@@ -330,7 +336,8 @@ class Validator:
     def parameter_mismatches(self):
         errs = []
         signature_params = self.signature_parameters
-        all_params = tuple(param.replace("\\", "") for param in self.doc_all_parameters)
+        all_params = tuple(param.replace("\\", "")
+                           for param in self.doc_all_parameters)
         missing = set(signature_params) - set(all_params)
         if missing:
             errs.append(error("PR01", missing_params=str(missing)))
@@ -378,6 +385,14 @@ class Validator:
     @property
     def yields(self):
         return self.doc["Yields"]
+
+    @property
+    def description(self):
+        return self.doc["Description"]
+
+    @property
+    def keywords(self):
+        return self.doc["Keywords"]
 
     @property
     def method_source(self):
@@ -534,7 +549,8 @@ def validate(obj_name, validator_cls=None, **validator_kwargs):
     ]
     for section in unexpected_sections:
         errs.append(
-            error("GL06", section=section, allowed_sections=", ".join(ALLOWED_SECTIONS))
+            error("GL06", section=section,
+                  allowed_sections=", ".join(ALLOWED_SECTIONS))
         )
 
     correct_order = [
@@ -601,7 +617,8 @@ def validate(obj_name, validator_cls=None, **validator_kwargs):
                                 wrong_type=wrong_type,
                             )
                         )
-        errs.extend(_check_desc(kind_desc[1], "PR07", "PR08", "PR09", param_name=param))
+        errs.extend(_check_desc(
+            kind_desc[1], "PR07", "PR08", "PR09", param_name=param))
 
     if doc.is_function_or_method:
         if not doc.returns:

@@ -56,7 +56,7 @@ class Reader:
             return ""
 
     def seek_next_non_empty_line(self):
-        for l in self[self._l :]:
+        for l in self[self._l:]:
             if l.strip():
                 break
             else:
@@ -69,10 +69,10 @@ class Reader:
         start = self._l
         for line in self[start:]:
             if condition_func(line):
-                return self[start : self._l]
+                return self[start: self._l]
             self._l += 1
             if self.eof():
-                return self[start : self._l + 1]
+                return self[start: self._l + 1]
         return []
 
     def read_to_next_empty_line(self):
@@ -108,6 +108,7 @@ class ParseError(Exception):
 
 
 Parameter = namedtuple("Parameter", ["name", "type", "desc"])
+Keyword = namedtuple("Keyword", ["name", "type", "desc"])
 
 
 class NumpyDocString(Mapping):
@@ -135,6 +136,8 @@ class NumpyDocString(Mapping):
         "Warnings": [],
         "References": "",
         "Examples": "",
+        "Description": [],
+        "Keywords": [],
         "index": {},
     }
 
@@ -197,7 +200,7 @@ class NumpyDocString(Mapping):
             if line.strip():
                 break
 
-        return doc[i : len(doc) - j]
+        return doc[i: len(doc) - j]
 
     def _read_to_next_section(self):
         section = self._doc.read_to_next_empty_line()
@@ -282,7 +285,8 @@ class NumpyDocString(Mapping):
         + r")*)"
         + r")"
         + r"(?P<trailing>[,\.])?"  # end of "allfuncs"
-        + _description  # Some function lists have a trailing comma (or period)  '\s*'
+        # Some function lists have a trailing comma (or period)  '\s*'
+        + _description
     )
 
     # Empty <DESC> elements are replaced with '..'
@@ -413,7 +417,7 @@ class NumpyDocString(Mapping):
                         % (section, "\n".join(self._doc._str))
                     )
 
-            if section in ("Parameters", "Other Parameters", "Attributes", "Methods"):
+            if section in ("Parameters", "Other Parameters", "Attributes", "Methods", "Keywords"):
                 self[section] = self._parse_param_list(content)
             elif section in ("Returns", "Yields", "Raises", "Warns", "Receives"):
                 self[section] = self._parse_param_list(
@@ -445,7 +449,8 @@ class NumpyDocString(Mapping):
             # Skip if introspection fails
             name = getattr(self._obj, "__name__", None)
             if name is None:
-                name = getattr(getattr(self._obj, "__class__", None), "__name__", None)
+                name = getattr(
+                    getattr(self._obj, "__class__", None), "__name__", None)
             if name is not None:
                 msg += f" in the docstring of {name}"
             msg += f" in {filename}." if filename else ""
@@ -556,13 +561,14 @@ class NumpyDocString(Mapping):
         out += self._str_summary()
         out += self._str_extended_summary()
         for param_list in (
-            "Parameters",
-            "Returns",
-            "Yields",
-            "Receives",
-            "Other Parameters",
-            "Raises",
-            "Warns",
+                "Parameters",
+                "Returns",
+                "Yields",
+                "Receives",
+                "Other Parameters",
+                "Raises",
+                "Warns",
+                "Keywords",
         ):
             out += self._str_param_list(param_list)
         out += self._str_section("Warnings")
@@ -640,7 +646,8 @@ class ClassDoc(NumpyDocString):
 
         if config is None:
             config = {}
-        self.show_inherited_members = config.get("show_inherited_class_members", True)
+        self.show_inherited_members = config.get(
+            "show_inherited_class_members", True)
 
         if modulename and not modulename.endswith("."):
             modulename += "."
@@ -667,20 +674,22 @@ class ClassDoc(NumpyDocString):
                     return s.splitlines()
 
             for field, items in [
-                ("Methods", self.methods),
-                ("Attributes", self.properties),
+                    ("Methods", self.methods),
+                    ("Attributes", self.properties),
             ]:
                 if not self[field]:
                     doc_list = []
-                    for name in sorted(items):
-                        if name in _exclude or (_members and name not in _members):
-                            continue
-                        try:
-                            doc_item = pydoc.getdoc(getattr(self._cls, name))
-                            doc_list.append(Parameter(name, "", splitlines_x(doc_item)))
-                        except AttributeError:
-                            pass  # method doesn't exist
                     self[field] = doc_list
+            #        for name in sorted(items):
+            #            if name in _exclude or (_members and name not in _members):
+            #                continue
+            #            try:
+            #                doc_item = pydoc.getdoc(getattr(self._cls, name))
+            #                doc_list.append(
+            #                    Parameter(name, "", splitlines_x(doc_item)))
+            #            except AttributeError:
+            #                pass  # method doesn't exist
+#            self[field] = doc_list
 
     @property
     def methods(self):

@@ -28,13 +28,15 @@ class SphinxDocString(NumpyDocString):
     def load_config(self, config):
         self.use_plots = config.get("use_plots", False)
         self.class_members_toctree = config.get("class_members_toctree", True)
-        self.attributes_as_param_list = config.get("attributes_as_param_list", True)
+        self.attributes_as_param_list = config.get(
+            "attributes_as_param_list", True)
         self.xref_param_type = config.get("xref_param_type", False)
         self.xref_aliases = config.get("xref_aliases", dict())
         self.xref_ignore = config.get("xref_ignore", set())
         self.template = config.get("template", None)
         if self.template is None:
-            template_dirs = [os.path.join(os.path.dirname(__file__), "templates")]
+            template_dirs = [os.path.join(
+                os.path.dirname(__file__), "templates")]
             template_loader = FileSystemLoader(template_dirs)
             template_env = SandboxedEnvironment(loader=template_loader)
             self.template = template_env.get_template("numpydoc_docstring.rst")
@@ -56,7 +58,8 @@ class SphinxDocString(NumpyDocString):
         return [""]
 
     def _str_summary(self):
-        return self["Summary"] + [""]
+        description = ["DESCRIPTION:\n"] + self["Description"] + [""]
+        return description
 
     def _str_extended_summary(self):
         return self["Extended Summary"] + [""]
@@ -172,6 +175,8 @@ class SphinxDocString(NumpyDocString):
             else:
                 desc = desc.partition("\n")[0]
             desc = desc.split("\n")
+
+        print(display_param, desc)
         return display_param, desc
 
     def _str_param_list(self, name, fake_autosummary=False):
@@ -201,6 +206,7 @@ class SphinxDocString(NumpyDocString):
                 display_param, desc = self._process_param(
                     param.name, param.desc, fake_autosummary
                 )
+
                 parts = []
                 if display_param:
                     parts.append(display_param)
@@ -219,7 +225,6 @@ class SphinxDocString(NumpyDocString):
                     desc = [".."]
                 out += self._str_indent(desc, 8)
                 out += [""]
-
         return out
 
     def _str_member_list(self, name):
@@ -365,7 +370,7 @@ class SphinxDocString(NumpyDocString):
             "returns": self._str_returns("Returns"),
             "yields": self._str_returns("Yields"),
             "receives": self._str_returns("Receives"),
-            "other_parameters": self._str_param_list("Other Parameters"),
+            "keywords": self._str_param_list("Keywords"),
             "raises": self._str_returns("Raises"),
             "warns": self._str_returns("Warns"),
             "warnings": self._str_warnings(),
