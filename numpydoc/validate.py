@@ -28,6 +28,7 @@ DIRECTIVE_PATTERN = re.compile(
 )
 ALLOWED_SECTIONS = [
     "Parameters",
+    "Keywords",
     "Attributes",
     "Methods",
     "Returns",
@@ -392,12 +393,16 @@ class Validator:
         return self._doc_parameters(["Parameters"])
 
     @property
+    def doc_keywords(self):
+        return self._doc_parameters(["Keywords"])
+
+    @property
     def doc_other_parameters(self):
         return self._doc_parameters(["Other Parameters"])
 
     @property
     def doc_all_parameters(self):
-        return self._doc_parameters(["Parameters", "Other Parameters"])
+        return self._doc_parameters(["Parameters", "Keywords", "Other Parameters"])
 
     @property
     def signature_parameters(self):
