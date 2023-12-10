@@ -123,6 +123,7 @@ class NumpyDocString(Mapping):
         "Summary": [""],
         "Extended Summary": [],
         "Parameters": [],
+        "Keywords": [],
         "Returns": [],
         "Yields": [],
         "Receives": [],
@@ -417,7 +418,7 @@ class NumpyDocString(Mapping):
                         % (section, "\n".join(self._doc._str))
                     )
 
-            if section in ("Parameters", "Other Parameters", "Attributes", "Methods", "Keywords"):
+            if section in ("Parameters", "Keywords", "Other Parameters", "Attributes", "Methods"):
                 self[section] = self._parse_param_list(content)
             elif section in ("Returns", "Yields", "Raises", "Warns", "Receives"):
                 self[section] = self._parse_param_list(
@@ -561,14 +562,14 @@ class NumpyDocString(Mapping):
         out += self._str_summary()
         out += self._str_extended_summary()
         for param_list in (
-                "Parameters",
-                "Returns",
-                "Yields",
-                "Receives",
-                "Other Parameters",
-                "Raises",
-                "Warns",
-                "Keywords",
+            "Parameters",
+            "Keywords",
+            "Returns",
+            "Yields",
+            "Receives",
+            "Other Parameters",
+            "Raises",
+            "Warns",
         ):
             out += self._str_param_list(param_list)
         out += self._str_section("Warnings")
