@@ -26,7 +26,7 @@ jobs:
             "sphinx>=7.0",
           ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Python setup
         uses: actions/setup-python@v4
@@ -65,7 +65,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt install texlive texlive-latex-extra latexmk dvipng
-          pip install "sphinx<6"
 
       - name: Build documentation
         run: |
@@ -79,7 +78,7 @@ jobs:
         os: [ubuntu]
         python-version: ["3.9", "3.10"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Python setup
         uses: actions/setup-python@v4
@@ -117,7 +116,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt install texlive texlive-latex-extra latexmk dvipng
-          pip install "sphinx<6"
 
       - name: Build documentation
         run: |
