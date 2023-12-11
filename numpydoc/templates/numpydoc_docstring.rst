@@ -2,6 +2,7 @@
 {{summary}}
 {{extended_summary}}
 {{parameters}}
+{{keywords}}
 {{returns}}
 {{yields}}
 {{receives}}
