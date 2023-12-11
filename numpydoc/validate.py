@@ -28,7 +28,6 @@ DIRECTIVE_PATTERN = re.compile(
 )
 ALLOWED_SECTIONS = [
     "Parameters",
-    "Keywords",
     "Attributes",
     "Methods",
     "Returns",
