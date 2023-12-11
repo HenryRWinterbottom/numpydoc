@@ -138,7 +138,10 @@ class SphinxDocString(NumpyDocString):
         # XXX: If changing the following, please check the rendering when param
         # ends with '_', e.g. 'word_'
         # See https://github.com/numpy/numpydoc/pull/144
-        display_param = f"**{param}**"
+        # display_param = f"**{param}**"
+        display_param = f"{param}" # HRW: This produces formatted data
+                                   # types and includes Keyword
+                                   # parameters.
 
         if not fake_autosummary:
             return display_param, desc
@@ -225,6 +228,7 @@ class SphinxDocString(NumpyDocString):
                     desc = [".."]
                 out += self._str_indent(desc, 8)
                 out += [""]
+                
         return out
 
     def _str_member_list(self, name):
